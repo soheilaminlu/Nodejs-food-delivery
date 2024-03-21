@@ -5,7 +5,7 @@ import { generatePassword, generateSalt } from "../utility/PasswordUtility";
 
 export const findVandor = async (id:string | undefined , email?: string) => {
  if(email) {
-  return Vandor.find({email:email})
+  return Vandor.findOne({email:email})
  } 
  return Vandor.findById(id)
 }

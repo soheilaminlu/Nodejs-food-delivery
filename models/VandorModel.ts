@@ -1,8 +1,9 @@
-import mongoose , {Schema  , Document , model} from "mongoose";
+import mongoose , {Schema  , Document , Model} from "mongoose";
 
 interface vandorDoc extends Document {
     ownerName: string;
-    foodType: string;
+    name:string;
+    foodType: [string];
     pinCode:  string ;
     address: string;
     password: string;
@@ -12,13 +13,14 @@ interface vandorDoc extends Document {
     serviceAvailable: Boolean;
     coverImage:[string];
     rating:Number;
-    // food: any
+     food: any
 }
 
 
 const vandorSchema = new Schema({
     ownerName: {type:String , required:true} , 
-    foodType: {type:String , required:true} , 
+    name:{type:String , required:true} , 
+    foodType: {type:[String] , required:true} , 
     pinCode: {type:String , required:true} , 
     address: {type:String , required:true} , 
     password: {type:String , required:true},
@@ -28,9 +30,9 @@ const vandorSchema = new Schema({
     serviceAvailable: {type:Boolean , required:true} , 
     coverImage:{type:[String]} , 
     rating:{type:Number} , 
-//     food:[{type:mongoose.Schema.Types.ObjectId , 
-//         ref: 'food'
-// }] 
+     food:[{type:mongoose.Schema.Types.ObjectId , 
+       ref: 'food'
+ }] 
 } , {
   toJSON:{
     transform(doc , ret) {
