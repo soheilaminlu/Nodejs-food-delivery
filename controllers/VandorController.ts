@@ -9,7 +9,7 @@ export const vandorLogin = async (req: Request, res: Response, next: NextFunctio
     const { email, password } = <vandorLoginInput>req.body;
     const existingVandor = await findVandor('', email);
     if (existingVandor !== null) {
-  
+     
       const validation = await validatePassword(password, existingVandor.password, existingVandor.salt);
       if (validation) {
   
@@ -69,6 +69,22 @@ if(user) {
   return res.json({message:'Failed to Update Service'})
 }
 
+}
+
+export const upadteCoverImage = async (req:Request , res:Response , next:NextFunction) => {
+
+  const user = req.user;
+
+  if(user) {
+    const vandor = await findVandor(user._id)
+    if(vandor !== null) {
+      const files = req.files as Express.Multer.File[];
+      const image = files.map((file: Express.Multer.File) => file.filename);
+      vandor.coverImage.push(...image)
+       const result = await vandor.save();
+       return res.json(result)
+      }
+  }
 }
 
 export const addFood = async (req:Request , res:Response , next:NextFunction) =>{
