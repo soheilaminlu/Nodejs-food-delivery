@@ -1,7 +1,9 @@
 import { Request , Response  , NextFunction} from "express";
-import { editVandorInput, vandorLoginInput} from '../dto'
+import { createFoodInput, editVandorInput, vandorLoginInput} from '../dto'
 import { findVandor } from "./AdminController";
 import { generateSignature, validatePassword } from "../utility/PasswordUtility";
+import { Food } from "../models";
+
 
 export const vandorLogin = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = <vandorLoginInput>req.body;
@@ -70,10 +72,48 @@ if(user) {
 }
 
 export const addFood = async (req:Request , res:Response , next:NextFunction) =>{
+  const user = req.user;
+
+const {name , price , category , foodType , description , readyTime} = <createFoodInput>req.body
+if(user) {
+  const vandor = await findVandor(user._id)
+  if(vandor !== null) {
+    const files = req.files as Express.Multer.File[];
+    const image = files.map((file: Express.Multer.File) => file.filename);
+
+    const createFood = await Food.create({
+      vandorId:vandor._id , 
+      name:name , 
+      price:price , 
+      category:category , 
+      foodType:foodType , 
+      image:image , 
+      description:description , 
+      readyTime:readyTime
+
+    })
+   vandor.food.push(createFood);
+   await vandor.save()
+  return res.json({message:"food created asnd added successfully"})
+  }
+  return res.json({message:"Failed to find vandor"})
+
+}
+return res.json({message:"User is not Valid"})
 
 }
 
 
 export const getFood = async (req:Request , res:Response , next:NextFunction) =>{
+
+const user = req.user;
+if(user) {
+  const foods = await Food.find({vandorId:user._id})
+  if(foods !== null) {
+   return res.json({message:"Loading Foods Successfuly"})
+  }
+  return res.json({message:"Failed to find Foods"})
+}
+return res.json({message:"Failed to find User"})
 
 }
